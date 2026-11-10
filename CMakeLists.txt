@@ -962,10 +962,6 @@ set_target_properties( primative_planner_tests eigen_tests transform_tests grasp
 )
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
-add_dependencies(primative_planner_tests googletest)
-add_dependencies(eigen_tests googletest)
-add_dependencies(transform_tests googletest)
-add_dependencies(graspit_collision_tests googletest)
 
 target_link_libraries(primative_planner_tests
    graspit
@@ -986,6 +982,14 @@ target_link_libraries(graspit_collision_tests
    graspit
    ${GTEST_BOTH_LIBRARIES}
 )
+
+# Register the tests with CTest (run them with `ctest` in the build dir).
+# The collision and planner tests start the full GraspIt GUI, so they need
+# a display; they load worlds/models from $GRASPIT (this source tree).
+foreach(t eigen_tests transform_tests graspit_collision_tests primative_planner_tests)
+  add_test(NAME ${t} COMMAND ${t})
+  set_tests_properties(${t} PROPERTIES ENVIRONMENT "GRASPIT=${GSRC}")
+endforeach()
 
 
 
