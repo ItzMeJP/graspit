@@ -234,6 +234,8 @@ GWS::projectTo3D(double *projCoords, std::set<int> fixedCoordSet,
     return FAILURE; //exit(exitcode);
   }
   sprintf(options, "qhull -H0,0,0 Pp");
+  // Qhull >= 2020 requires clearing NOerrexit after setjmp and before qh_initflags
+  qh NOerrexit = False;
   qh_initflags(options);
   qh_setfeasible(3);
   if (!(qh feasible_point)) { printf("why is qh_qh NULL?\n"); }
@@ -497,6 +499,8 @@ GWS::buildHyperplanesFromWrenches(void *wr, int numWrenches,
   }
 
   sprintf(options, "qhull Pp n Qx QJ C-0.0001");
+  // Qhull >= 2020 requires clearing NOerrexit after setjmp and before qh_initflags
+  qh NOerrexit = False;
   qh_initflags(options);
   qh_init_B(&wrenches[0], numWrenches, dimensions, ismalloc);
   qh_qhull();

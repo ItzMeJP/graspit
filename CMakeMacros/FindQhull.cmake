@@ -87,11 +87,16 @@ mark_as_advanced(QHULL_LIBRARY QHULL_LIBRARY_DEBUG QHULL_INCLUDE_DIR)
 
 if(QHULL_FOUND)
   set(HAVE_QHULL ON)
-  if(NOT QHULL_USE_STATIC)
+  # Qhull >= 2015 (e.g. 2020.2 on Ubuntu 24.04): the shared "libqhull"
+  # library no longer uses qh_QHpointer (qh_qh is the struct itself).
+  # Defining qh_QHpointer here made GraspIt read that struct as a pointer
+  # and segfault (setjmp(qh errexit) in gws.cpp).
+  # Only enable it when explicitly requested: -DQHULL_USE_QHPOINTER=ON.
+  if(QHULL_USE_QHPOINTER)
     add_definitions("-Dqh_QHpointer")
     if(MSVC)
       add_definitions("-Dqh_QHpointer_dllimport")
     endif(MSVC)
-  endif(NOT QHULL_USE_STATIC)
+  endif(QHULL_USE_QHPOINTER)
   message(STATUS "QHULL found (include: ${QHULL_INCLUDE_DIRS}, lib: ${QHULL_LIBRARIES})")
 endif(QHULL_FOUND)

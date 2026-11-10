@@ -199,6 +199,8 @@ CollisionInterface::replaceContactSetWithPerimeter(ContactReport &contactSet)
 
   sprintf(options, "qhull n Pp");
   try {
+    // Qhull >= 2020 requires clearing NOerrexit after setjmp and before qh_initflags
+    qh NOerrexit = False;
     qh_initflags(options);
     qh_init_B(&array[0], ptCount, 2, ismalloc);
     qh_qhull();
